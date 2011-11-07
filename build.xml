@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="star" basedir="." default="main">
+  <property name="pkg.dir" value="src/main/php/org/stubbles/star"/>
+  <property name="pkg.name" value="star-${version}"/>
+  <property name="build.src.dir" value="build/${pkg.name}"/>
+  <taskdef classname="phing.tasks.ext.d51PearPkg2Task" name="d51pearpkg2"/>
+
+  <target name="main" if="version" depends="test,build,package"/>
+
+  <target name="build" if="version" depends="versioncheck,copy-files,build-archives"/>
+
+  <target name="versioncheck" unless="version">
+    <php function="file_get_contents" returnProperty="version">
+      <param value="VERSION"/>
+    </php>
+    <echo>Version to be build: ${version}</echo>
+    <property name="pkg.name" value="star-${version}" override="true"/>
+    <property name="build.src.dir" value="build/${pkg.name}" override="true"/>
+  </target>
+
+  <target name="copy-files">
+    <echo>-----------------------------</echo>
+    <echo>| Creating directory layout |</echo>
+    <echo>-----------------------------</echo>
+    <delete dir="${build.src.dir}"/>
+    <copy file="LICENSE" tofile="${build.src.dir}/LICENSE"/>
+    <append destFile="${build.src.dir}/VERSION">star version ${version}</append>
+    <copy todir="${build.src.dir}">
+      <fileset dir="src/main/php/org/stubbles/phing">
+        <include name="**/*.php"/>
+      </fileset>
+      <fileset dir="src/main/php/org/stubbles/star">
+        <include name="**/*.php"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="build-archives" depends="versioncheck" if="version">
+    <echo>-----------------------------</echo>
+    <echo>| Creating·star·files       |</echo>
+    <echo>-----------------------------</echo>
+    <php function="file_get_contents" returnProperty="StarStreamWrapper">
+      <param value="src/main/php/org/stubbles/star/StarStreamWrapper.php"/>
+    </php>
+    <php function="file_get_contents" returnProperty="StarException">
+      <param value="src/main/php/org/stubbles/star/StarException.php"/>
+    </php>
+    <php function="file_get_contents" returnProperty="StarClassRegistry">
+      <param value="src/main/php/org/stubbles/star/StarClassRegistry.php"/>
+    </php>
+    <php function="file_put_contents">
+      <param value="${build.src.dir}/starReader.php"/>
+      <param value="${StarStreamWrapper}${StarException}${StarClassRegistry}&lt;?php StarStreamWrapper::register(); ?&gt;"/>
+    </php>
+    <exec command="php &quot;build.php&quot; -i &quot;src/main/resources/build/compile-writer-archive.ini&quot; -t &quot;${build.src.dir}/starWriter.php&quot; -r &quot;${pkg.dir}&quot;" passthru="true"/>
+    <exec command="php &quot;build.php&quot; -i &quot;src/main/resources/build/compile-writer-cli.ini&quot; -t &quot;${build.src.dir}/starWriter-cli.php&quot; -r &quot;${pkg.dir}&quot;" passthru="true"/>
+  </target> 
+
+  <target name="package" description="Build the pear package" depends="create-package-xml">
+    <if>
+      <available file="build/star-${version}/package.xml" property="package.xml.exists"/>
+      <then>
+        <exec command="pear package" dir="build/star-${version}"/>
+        <move file="build/star-${version}/star-${version}.tgz" tofile="build/star-${version}.tgz" overwrite="true"/>
+      </then>
+    </if>
+  </target>
+
+  <target name="create-package-xml" depends="versioncheck">
+    <d51pearpkg2 dir="build/star-${version}" baseinstalldir="star">
+      <name>star</name>
+      <summary>Stubbles Archive file builder.</summary>
+      <channel>pear.php-tools.net</channel>
+      <description>
+        Tools to read and write stubbles archive (star) files.
+      </description>
+      <lead user="mikey" name="Frank Kleine" email="mikey@stubbles.net"/>
+      <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD</license>
+      <version release="${version}" api="${version}"/>
+      <stability release="alpha" api="alpha"/>
+      <dependencies>
+        <php minimum_version="5.2.0"/>
+        <pear minimum_version="1.4.0"/>
+      </dependencies>
+      <ignore>LICENSE</ignore>
+      <ignore>VERSION</ignore>
+
+      <changelog version="0.10.3" date="2010-10-12">
+        - fix problems with different directory separators in
+          StarStreamWrapper::acquire()
+      </changelog>
+
+      <changelog version="0.10.2" date="2010-09-08">
+        - allow usage of is_readable() and related functions on star urls
+      </changelog>
+
+      <changelog version="0.10.1" date="2009-10-29">
+        - readd scripts to release
+      </changelog>
+
+      <changelog version="0.10.0" date="2009-10-26">
+        - prevent redeclaration of classes if loaded twice
+      </changelog>
+
+      <changelog version="0.9.1" date="2008-12-19">
+        - write copyright year only once if start year is same as current year
+      </changelog>
+
+      <changelog version="0.9.0" date="2008-12-17">
+        - initial release as pear package
+      </changelog>
+
+    </d51pearpkg2>
+  </target>
+
+  <target name="test" description="run test suite">
+    <exec passthru="true" command="phpunit src_test_AllTests"/>
+  </target>
+</project>

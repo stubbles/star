@@ -1,0 +1,3 @@
+<?php
+StarConsole::main();
+?>
