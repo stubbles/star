@@ -12,7 +12,7 @@ if (defined('PHPUnit_MAIN_METHOD') === false) {
 
 define('MAIN_SRC_PATH', realpath(dirname(__FILE__) . '/../main/php'));
 define('TEST_SRC_PATH', dirname(__FILE__));
-require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Framework/TestSuite.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 /**
  * Test suite for all classes of org::stubbles::star.

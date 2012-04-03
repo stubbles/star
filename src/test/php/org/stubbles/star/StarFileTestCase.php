@@ -7,6 +7,7 @@
  * @subpackage  test
  */
 require_once MAIN_SRC_PATH . '/org/stubbles/star/StarFile.php';
+require_once 'PHPUnit/Framework/TestCase.php';
 /**
  * Tests for norg::stubbles::star::StarFile.
  *
@@ -29,7 +30,7 @@ class StarFileTestCase extends PHPUnit_Framework_TestCase
     protected $filename;
     /**
      * the directory name
-     * 
+     *
      * @var  string
      */
     protected $dirname;
@@ -69,17 +70,17 @@ class StarFileTestCase extends PHPUnit_Framework_TestCase
         $this->assertEquals('baz', $this->starFile->getExtension());
         $this->assertEquals($this->filename, $this->starFile->getName());
         $this->assertEquals('foo', $this->starFile->getPathWithBaseRemoved());
-        
+
         $this->starFile->setExtension('foo');
         $this->assertEquals('foo', $this->starFile->getExtension());
         $this->assertEquals(substr($this->filename, 0, -3) . 'foo', $this->starFile->getName());
         $this->assertEquals('foo', $this->starFile->getPathWithBaseRemoved());
-        
+
         $this->starFile->setExtension('bar');
         $this->assertEquals('bar', $this->starFile->getExtension());
         $this->assertEquals(substr($this->filename, 0, -3) . 'bar', $this->starFile->getName());
         $this->assertEquals('foo', $this->starFile->getPathWithBaseRemoved());
-        
+
         $this->starFile->setExtension('baz');
         $this->assertEquals('baz', $this->starFile->getExtension());
         $this->assertEquals($this->filename, $this->starFile->getName());
