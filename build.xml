@@ -54,7 +54,7 @@
     </php>
     <exec command="php &quot;build.php&quot; -i &quot;src/main/resources/build/compile-writer-archive.ini&quot; -t &quot;${build.src.dir}/starWriter.php&quot; -r &quot;${pkg.dir}&quot;" passthru="true"/>
     <exec command="php &quot;build.php&quot; -i &quot;src/main/resources/build/compile-writer-cli.ini&quot; -t &quot;${build.src.dir}/starWriter-cli.php&quot; -r &quot;${pkg.dir}&quot;" passthru="true"/>
-  </target> 
+  </target>
 
   <target name="package" description="Build the pear package" depends="create-package-xml">
     <if>
@@ -70,7 +70,7 @@
     <d51pearpkg2 dir="build/star-${version}" baseinstalldir="star">
       <name>star</name>
       <summary>Stubbles Archive file builder.</summary>
-      <channel>pear.php-tools.net</channel>
+      <channel>pear.bovigo.org</channel>
       <description>
         Tools to read and write stubbles archive (star) files.
       </description>
@@ -84,6 +84,10 @@
       </dependencies>
       <ignore>LICENSE</ignore>
       <ignore>VERSION</ignore>
+
+      <changelog version="0.11.0" date="2012-04-03">
+        - switch to new PEAR channel pear.bovigo.org
+      </changelog>
 
       <changelog version="0.10.3" date="2010-10-12">
         - fix problems with different directory separators in
